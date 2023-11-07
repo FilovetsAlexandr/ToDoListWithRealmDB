@@ -42,11 +42,6 @@ struct TxtAlertData {
 
 class TasksTVC: UITableViewController {
     
-    private var isDragging = false
-    private var sourceIndexPath: IndexPath?
-    private var draggingView: UIView?
-
-    
     var currentTasksList: TasksList?
     
     private var notCompletedTasks: Results<Task>!
@@ -54,74 +49,24 @@ class TasksTVC: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        setupLongPressGesture()
-        
         /// title
         title = currentTasksList?.name
         /// filtering tasks
         filteringTasks()
         
+        let edit = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(editBarButtonSystemItemSelector))
         let add = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addBarButtonSystemItemSelector))
-        navigationItem.setRightBarButton(add, animated: true)
+        
+        navigationItem.rightBarButtonItems = [add, edit]
     }
 
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int { 2 }
 
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        section == 0 ? notCompletedTasks.count : completedTasks.count
-    }
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { section == 0 ? notCompletedTasks.count : completedTasks.count }
     
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        section == 0 ? "Not comleted tasks" : "Comleted tasks"
-    }
-    private func createDraggingView(for indexPath: IndexPath) {
-        let cell = tableView.cellForRow(at: indexPath)
-        draggingView = cell?.snapshotView(afterScreenUpdates: true)
-        if let draggingView = draggingView {
-            draggingView.frame = cell?.frame ?? CGRect.zero
-            tableView.addSubview(draggingView)
-            UIView.animate(withDuration: 0.2) {
-                draggingView.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
-                draggingView.alpha = 0.8
-            }
-        }
-    }
-    @objc private func handleLongPressGesture(_ gesture: UILongPressGestureRecognizer) {
-        let location = gesture.location(in: tableView)
-        guard let indexPath = tableView.indexPathForRow(at: location) else { return }
-        
-        switch gesture.state {
-        case .began:
-            isDragging = true
-            sourceIndexPath = indexPath
-            createDraggingView(for: indexPath)
-            tableView.beginUpdates()
-            tableView.deleteRows(at: [indexPath], with: .automatic)
-        case .changed:
-            draggingView?.center = location
-            if let newIndexPath = tableView.indexPathForRow(at: location) {
-                if newIndexPath != sourceIndexPath {
-                    tableView.moveRow(at: sourceIndexPath!, to: newIndexPath)
-                    sourceIndexPath = newIndexPath
-                }
-            }
-        case .ended:
-            isDragging = false
-            draggingView?.removeFromSuperview()
-            tableView.insertRows(at: [indexPath], with: .automatic)
-            tableView.endUpdates()
-        default:
-            break
-        }
-    }
-
-    private func setupLongPressGesture() {
-        let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(_:)))
-        tableView.addGestureRecognizer(longPressGesture)
-    }
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? { section == 0 ? "Not comleted tasks" : "Comleted tasks" }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
@@ -142,14 +87,15 @@ class TasksTVC: UITableViewController {
             self?.filteringTasks()
         }
         
-        let editContextualAction = UIContextualAction(style: .destructive, title: "Edit") { [weak self] _, _, _ in
-            self?.alertForAddAndUpdatesTask(tasksTVCFlow: .editingTask(task: task))
+        let editContextualAction = UIContextualAction(style: .destructive, title: "Edit") { [weak self] _, _, _ in self?.alertForAddAndUpdatesTask(tasksTVCFlow: .editingTask(task: task))
+            self?.filteringTasks()
         }
         
         let doneText = task.isComplete ? "Not done" : "Done"
         let doneContextualAction = UIContextualAction(style: .destructive, title: doneText) { [weak self] _, _, _ in
             StorageManager.makeDoneTask(task: task)
             self?.filteringTasks()
+            self?.tableView.reloadRows(at: [indexPath], with: .none)
         }
         
         deleteContextualAction.backgroundColor = .red
@@ -163,9 +109,19 @@ class TasksTVC: UITableViewController {
 
     override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool { true }
     
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
+    override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        if sourceIndexPath.section == 0 && destinationIndexPath.section == 1 {
+            // Перемещение ячейки из раздела "Not Completed" в раздел "Completed"
+            let task = notCompletedTasks[sourceIndexPath.row]
+            StorageManager.makeTaskCompleted(task: task)
+        } else if sourceIndexPath.section == 1 && destinationIndexPath.section == 0 {
+            // Перемещение ячейки из раздела "Completed" в раздел "Not Completed"
+            let task = completedTasks[sourceIndexPath.row]
+            StorageManager.makeTaskNotCompleted(task: task)
+        }
+        filteringTasks()
     }
+
     
     private func filteringTasks() {
         notCompletedTasks = currentTasksList?.tasks.filter("isComplete = false")
@@ -218,15 +174,15 @@ class TasksTVC: UITableViewController {
                 case .editingTask(let task):
                     StorageManager.editTask(task: task, newName: newTaskName, newNote: noteTask)
             }
-            
             self.filteringTasks()
         }
         
         let cancelAction = UIAlertAction(title: txtAlertData.cancelTxt, style: .destructive)
-    
+        
         alert.addAction(cancelAction)
         alert.addAction(saveAction)
         
         present(alert, animated: true)
     }
+    @objc private func editBarButtonSystemItemSelector() { tableView.setEditing(!tableView.isEditing, animated: true) }
 }

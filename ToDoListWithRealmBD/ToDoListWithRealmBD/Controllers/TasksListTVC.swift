@@ -42,10 +42,11 @@ class TasksListTVC: UITableViewController {
     // MARK: - Table view delegate
     
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        
         if editingStyle == .delete {
             let taskList = tasksLists[indexPath.row]
-            StorageManager.deleteTasksList(tasksList: taskList)
             tableView.deleteRows(at: [indexPath], with: .fade)
+            StorageManager.deleteTasksList(tasksList: taskList)
         }
     }
     
@@ -136,7 +137,6 @@ class TasksListTVC: UITableViewController {
             alertTextField.text = currentList?.name
             alertTextField.placeholder = "List name"
         }
-        
         present(alertController, animated: true)
     }
 }

@@ -110,7 +110,29 @@ class StorageManager {
         }
     }
     
-    static func findRealmFile() {
-        print("Realm is located at:", realm.configuration.fileURL!)
+        static func findRealmFile() {
+            print("Realm is located at:", realm.configuration.fileURL!)
+        }
+    
+    static func makeTaskCompleted(task: Task) {
+        do {
+            let realm = try Realm()
+            try realm.write {
+                task.isComplete = true
+            }
+        } catch {
+            print("Error updating task status: \(error)")
+        }
+    }
+
+    static func makeTaskNotCompleted(task: Task) {
+        do {
+            let realm = try Realm()
+            try realm.write {
+                task.isComplete = false
+            }
+        } catch {
+            print("Error updating task status: \(error)")
+        }
     }
 }
