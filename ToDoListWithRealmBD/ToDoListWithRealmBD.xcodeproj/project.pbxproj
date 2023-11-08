@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		F42DFE5F2AF3CD8600A56F40 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F42DFE5E2AF3CD8600A56F40 /* Realm */; };
 		F42DFE612AF3CD8600A56F40 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F42DFE602AF3CD8600A56F40 /* RealmSwift */; };
+		F4871CB82AF4EC5200991C29 /* UITableViewCellExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4871CB72AF4EC5200991C29 /* UITableViewCellExt.swift */; };
 		F48855D92AF3785A00B30911 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F48855D82AF3785A00B30911 /* AppDelegate.swift */; };
 		F48855DB2AF3785A00B30911 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F48855DA2AF3785A00B30911 /* SceneDelegate.swift */; };
 		F48855E02AF3785B00B30911 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F48855DE2AF3785B00B30911 /* Main.storyboard */; };
@@ -24,6 +25,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F4871CB72AF4EC5200991C29 /* UITableViewCellExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewCellExt.swift; sourceTree = "<group>"; };
 		F48855D52AF3785A00B30911 /* ToDoListWithRealmBD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToDoListWithRealmBD.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F48855D82AF3785A00B30911 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F48855DA2AF3785A00B30911 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -53,6 +55,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F4871CB62AF4EC2F00991C29 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				F4871CB72AF4EC5200991C29 /* UITableViewCellExt.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		F48855CC2AF3785A00B30911 = {
 			isa = PBXGroup;
 			children = (
@@ -72,12 +82,13 @@
 		F48855D72AF3785A00B30911 /* ToDoListWithRealmBD */ = {
 			isa = PBXGroup;
 			children = (
+				F4871CB62AF4EC2F00991C29 /* Extensions */,
 				F48855FA2AF3A1A400B30911 /* Managers */,
 				F48855F52AF3A10600B30911 /* Models */,
-				F48855F22AF3A0CB00B30911 /* AppDelegates */,
-				F48855F32AF3A0E400B30911 /* Controllers */,
 				F48855F42AF3A0F000B30911 /* Views */,
+				F48855F32AF3A0E400B30911 /* Controllers */,
 				F48855F12AF3A0B900B30911 /* Resources */,
+				F48855F22AF3A0CB00B30911 /* AppDelegates */,
 				F48855E62AF3785C00B30911 /* Info.plist */,
 			);
 			path = ToDoListWithRealmBD;
@@ -220,6 +231,7 @@
 				F48855FC2AF3A1BC00B30911 /* StorageManager.swift in Sources */,
 				F48856002AF3A1F600B30911 /* TasksTVC.swift in Sources */,
 				F48855DB2AF3785A00B30911 /* SceneDelegate.swift in Sources */,
+				F4871CB82AF4EC5200991C29 /* UITableViewCellExt.swift in Sources */,
 				F48855F92AF3A13C00B30911 /* ListModel.swift in Sources */,
 				F48855FE2AF3A1E600B30911 /* TasksListTVC.swift in Sources */,
 			);
